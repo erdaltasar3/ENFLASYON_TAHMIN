@@ -1,0 +1,70 @@
+/* General Styling */
+
+
+/* Navbar Styling */
+.navbar {
+    background-color: #1f1f1f;
+}
+
+.navbar-brand {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #fff;
+}
+
+.nav-link {
+    color: #aaa;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #f39c12;
+}
+
+/* Hero Section */
+.hero {
+    background: linear-gradient(135deg, #0d47a1, #121212);
+    padding: 100px 20px;
+    text-align: center;
+    color: #fff;
+}
+
+/* Charts Section */
+.charts-section {
+    padding: 60px 20px;
+    background: #1e1e1e;
+}
+
+.chart {
+    background: #2c2c2c;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Footer */
+footer {
+    background: #1f1f1f;
+    padding: 20px;
+    text-align: center;
+    color: #aaa;
+}
+
+footer a {
+    color: #f39c12;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* Social Icons */
+.social-icons a {
+    color: #aaa;
+    font-size: 1.5rem;
+    transition: color 0.3s ease;
+}
+
+.social-icons a:hover {
+    color: #f39c12;
+}

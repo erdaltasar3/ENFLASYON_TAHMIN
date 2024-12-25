@@ -1,0 +1,304 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ country.name }} - Ekonomik Veriler</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #1a1a1a;
+            color: #dcdcdc;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+            background: #222;
+            color: #fff;
+            border-bottom: 5px solid #333;
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin: 0;
+        }
+
+        header p {
+            font-size: 1.1em;
+            color: #ccc;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            background: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            font-size: 0.9em;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: #2980b9;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+
+        .chart-section {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-box {
+            background: #2c2c2c;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .chart-box h2 {
+            font-size: 1.3em;
+            color: #e0e0e0;
+            margin-bottom: 15px;
+        }
+
+        canvas {
+            background: #1a1a1a;
+            border-radius: 10px;
+        }
+
+        .enlarge-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            position: relative;
+            width: 80%;
+            max-width: 800px;
+            background: #1a1a1a;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .modal-content canvas {
+            background: #2c2c2c;
+            border-radius: 10px;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px 0;
+            margin-top: 30px;
+            background: #111;
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+
+        footer a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .chart-section {
+                flex-direction: column;
+            }
+        }
+
+        .forecast-btn {
+            display: block;
+            margin: 30px auto;
+            background: #e67e22;
+            color: #fff;
+            font-size: 1.2em;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .forecast-btn:hover {
+            background: #d35400;
+        }
+        
+    </style>
+</head>
+<body>
+    <header>
+        <a href="{% url 'grafikler' %}" class="back-btn">⬅ Geri Dön</a>
+        <h1>{{ country.name }}</h1>
+        <p>{{ country.name }} ile ilgili ekonomik verileri aşağıda inceleyebilirsiniz.</p>
+    </header>
+
+    <div class="container">
+        {% if labels %}
+        <div class="chart-section">
+            <!-- CPI Chart -->
+            <div class="chart-box">
+                <h2>Tüketici Fiyat Endeksi (CPI)</h2>
+                <button class="enlarge-btn" onclick="openModal('cpiModal')">🔍</button>
+                <canvas id="cpiChart"></canvas>
+            </div>
+
+            <!-- Unemployment Chart -->
+            <div class="chart-box">
+                <h2>İşsizlik Oranı</h2>
+                <button class="enlarge-btn" onclick="openModal('unemploymentModal')">🔍</button>
+                <canvas id="unemploymentChart"></canvas>
+            </div>
+
+            <!-- GDP Chart -->
+            <div class="chart-box">
+                <h2>GDP Büyüme Oranı</h2>
+                <button class="enlarge-btn" onclick="openModal('gdpModal')">🔍</button>
+                <canvas id="gdpChart"></canvas>
+            </div>
+        </div>
+
+        <button class="forecast-btn">Enflasyon Tahmini Yap</button>
+        {% endif %}
+    </div>
+
+    <!-- Modal Yapıları -->
+    <div id="cpiModal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('cpiModal')">Kapat</button>
+            <h2>Tüketici Fiyat Endeksi (CPI)</h2>
+            <canvas id="cpiModalChart"></canvas>
+        </div>
+    </div>
+
+    <div id="unemploymentModal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('unemploymentModal')">Kapat</button>
+            <h2>İşsizlik Oranı</h2>
+            <canvas id="unemploymentModalChart"></canvas>
+        </div>
+    </div>
+
+    <div id="gdpModal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('gdpModal')">Kapat</button>
+            <h2>GDP Büyüme Oranı</h2>
+            <canvas id="gdpModalChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // Veriler
+        const chartLabels = JSON.parse('{{ labels|escapejs }}');
+        const cpiData = JSON.parse('{{ cpi_data|escapejs }}');
+        const unemploymentData = JSON.parse('{{ unemployment_data|escapejs }}');
+        const gdpData = JSON.parse('{{ gdp_growth_data|escapejs }}');
+
+        // Grafik Fonksiyonları
+        function renderChart(ctx, label, data, borderColor) {
+            return new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        label: label,
+                        data: data,
+                        borderColor: borderColor,
+                        borderWidth: 2,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                    },
+                },
+            });
+        }
+
+        // Ana grafikler
+        renderChart(document.getElementById('cpiChart').getContext('2d'), 'CPI', cpiData, 'rgba(75, 192, 192, 1)');
+        renderChart(document.getElementById('unemploymentChart').getContext('2d'), 'Unemployment Rate', unemploymentData, 'rgba(255, 99, 132, 1)');
+        renderChart(document.getElementById('gdpChart').getContext('2d'), 'GDP Growth', gdpData, 'rgba(54, 162, 235, 1)');
+
+        // Modal grafikler
+        renderChart(document.getElementById('cpiModalChart').getContext('2d'), 'CPI', cpiData, 'rgba(75, 192, 192, 1)');
+        renderChart(document.getElementById('unemploymentModalChart').getContext('2d'), 'Unemployment Rate', unemploymentData, 'rgba(255, 99, 132, 1)');
+        renderChart(document.getElementById('gdpModalChart').getContext('2d'), 'GDP Growth', gdpData, 'rgba(54, 162, 235, 1)');
+
+        // Modal açma
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        // Modal kapama
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+    </script>
+</body>
+</html>

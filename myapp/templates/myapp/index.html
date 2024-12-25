@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Ana Sayfa{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero">
+    <h1>En Güncel Tahminlerle Geleceği Şekillendirin</h1>
+    <p>Ekonomik veriler, işsizlik oranları ve TÜFE analizleri için doğru adres.</p>
+    <button class="btn">Detayları Keşfet</button>
+</div>
+
+<!-- Charts Section -->
+<div class="charts-section">
+    <h2>Veri Analizleri</h2>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="chart">
+                    <canvas id="chart1"></canvas>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                    <div class="chart">
+                        <canvas id="chart2"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="chart">
+                        <canvas id="chart3"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const ctx1 = document.getElementById('chart1').getContext('2d');
+    const chart1 = new Chart(ctx1, {
+        type: 'line',
+        data: {
+            labels: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs'],
+            datasets: [{
+                label: 'İşsizlik Oranı (%)',
+                data: [12, 11, 13, 14, 10],
+                borderColor: '#f39c12',
+                fill: false,
+            }]
+        },
+    });
+
+    const ctx2 = document.getElementById('chart2').getContext('2d');
+    const chart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: ['2020', '2021', '2022', '2023'],
+            datasets: [{
+                label: 'TÜFE Oranı (%)',
+                data: [8, 12, 10, 15],
+                backgroundColor: '#d35400',
+            }]
+        },
+    });
+
+    const ctx3 = document.getElementById('chart3').getContext('2d');
+    const chart3 = new Chart(ctx3, {
+        type: 'pie',
+        data: {
+            labels: ['Teknoloji', 'Sağlık', 'Finans', 'Eğitim'],
+            datasets: [{
+                data: [30, 20, 25, 25],
+                backgroundColor: ['#f39c12', '#e74c3c', '#3498db', '#2ecc71'],
+            }]
+        },
+    });
+</script>
+
+{% endblock %}
